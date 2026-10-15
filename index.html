@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Birthday Special Surprise! 🌸</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Sacramento&display=swap" rel="stylesheet">
+    
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 50%, #ffd1dc 100%);
+            color: #4a4a4a;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Floating Hearts Background */
+        .heart-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            bottom: -50px;
+            color: rgba(255, 105, 180, 0.4);
+            font-size: 22px;
+            animation: floatUp 7s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 1; }
+            100% { transform: translateY(-110vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        /* COVER PAGE */
+        .cover-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            z-index: 9999;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .cover-card {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            padding: 35px 25px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(255, 105, 180, 0.35);
+            max-width: 390px;
+            width: 100%;
+            border: 2px solid #ffffff;
+            position: relative;
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .cover-card h1 {
+            font-family: 'Sacramento', cursive;
+            font-size: 3.8rem;
+            color: #d63031;
+            margin-bottom: 5px;
+            line-height: 1.1;
+        }
+
+        .cover-card p {
+            font-size: 0.95rem;
+            color: #636e72;
+            margin-bottom: 15px;
+        }
+
+        .timer-box {
+            background: #fff0f3;
+            border: 1px dashed #ff7675;
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: #d63031;
+            font-weight: 600;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.4);
+            transition: all 0.3s;
+        }
+
+        .start-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* MAIN APP CONTAINER */
+        .app-container {
+            display: none;
+            width: 100%;
+            max-width: 430px;
+            padding: 15px;
+            z-index: 10;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 25px;
+            padding: 22px;
+            box-shadow: 0 15px 35px rgba(232, 67, 147, 0.18);
+            border: 1.5px solid #ffeaa7;
+            text-align: center;
+            display: none;
+            animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .step-card.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .step-tag {
+            background: #ffeaa7;
+            color: #d63031;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .step-card img.main-pic {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+        }
+
+        .question-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        /* Options Buttons */
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .opt-btn {
+            background: #fff0f3;
+            border: 1.5px solid #ffb6c1;
+            padding: 12px 15px;
+            border-radius: 15px;
+            font-size: 0.88rem;
+            color: #d63031;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .opt-btn:active {
+            background: #ffe2e6;
+        }
+
+        .feedback-msg {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            min-height: 22px;
+        }
+
+        .next-step-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+        }
+
+        /* Passcode Lock UI */
+        .passcode-box {
+            margin: 20px 0;
+        }
+
+        .passcode-input {
+            width: 70%;
+            padding: 12px;
+            text-align: center;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            border: 2px solid #ff7675;
+            border-radius: 15px;
+            outline: none;
+            margin-bottom: 10px;
+        }
+
+        .unlock-btn {
+            background: #00b894;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* SCRATCH CARD STYLES */
+        .scratch-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            border-radius: 18px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            touch-action: none;
+            background: #f0f0f0;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+        }
+
+        .scratch-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            margin-bottom: 0;
+        }
+
+        #scratchCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            cursor: pointer;
+            border-radius: 18px;
+        }
+
+        /* Range Slider UI */
+        .slider-box {
+            margin: 20px 0;
+        }
+
+        .custom-slider {
+            width: 100%;
+            accent-color: #ff4757;
+        }
+
+        .slider-val {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ff4757;
+            margin-top: 8px;
+        }
+
+        /* GIFT SELECTION GRID */
+        .gift-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .gift-card {
+            background: #fff0f3;
+            border: 2px solid #ffb6c1;
+            border-radius: 16px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .gift-card:active {
+            transform: scale(0.95);
+            background: #ffe2e6;
+            border-color: #ff4757;
+        }
+
+        .gift-card img {
+            width: 100%;
+            height: 85px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+
+        .gift-card span {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #d63031;
+            display: block;
+        }
+
+        /* Proposal Section */
+        .proposal-card h2 {
+            font-size: 1.12rem;
+            color: #2d3436;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            min-height: 60px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        .btn-yes {
+            background: #ff4757;
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+            z-index: 10;
+        }
+
+        .btn-no {
+            background: #b2bec3;
+            color: white;
+            z-index: 99;
+        }
+
+        /* Final Success Screen */
+        .success-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 240, 245, 0.98);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 25px;
+            z-index: 10000;
+        }
+
+        .success-screen h1 {
+            font-family: 'Sacramento', cursive;
+            font-size: 3.8rem;
+            color: #ff4757;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Audio Background -->
+    <audio id="bgMusic" loop>
+        <source src="mp3.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Floating Background Hearts -->
+    <div class="heart-bg" id="heartBg"></div>
+
+    <!-- 1. COVER PAGE -->
+    <div class="cover-page" id="coverPage">
+        <div class="cover-card">
+            <span class="step-tag">Birthday Special 🎁</span>
+            <h1>Happy Birthday! 🎉</h1>
+            <p>Aaj tere is special din par maine yeh chhota sa game banaya hai, dekhte hain kitna score karti ho! ✨</p>
+            
+            <div class="timer-box" id="friendshipTimer">
+                Best Friends Since: <b>Loading...</b>
+            </div>
+
+            <button class="start-btn" onclick="startSurprise()">Open Surprise 💖</button>
+        </div>
+    </div>
+
+    <!-- 2. MAIN APP CONTAINER -->
+    <div class="app-container" id="appContainer">
+
+        <!-- STEP 1: Memory #1 (Photo 1) + Quiz -->
+        <div class="step-card active" id="step1">
+            <span class="step-tag">Memory #1 📸</span>
+            <img src="pic1.jpg" alt="Photo 1" class="main-pic">
+            <div class="question-title">Q1: Jab hum pehli baar mile the, toh tujhe mere baare mein pehla kya khayal aaya tha? 🤔</div>
+            
+            <div class="options-group">
+                <button class="opt-btn" onclick="checkQuiz(1, false, 'Arey yaar, itna bhi bura nahi hoon main! 😜 Dobara try karo.')">A) Yeh insaan bohot zyada bolta hai aur pakata hai!</button>
+                <button class="opt-btn" onclick="checkQuiz(1, true, 'Sahi jawab! Chal ab agle page par chalte hain ✨')">B) Wow, kitna cute, intelligent aur pyaara insaan hai yeh! ❤️</button>
+            </div>
+            
+            <div class="feedback-msg" id="fb1"></div>
+        </div>
+
+        <!-- STEP 2: Memory #2 (Photo 2) + Passcode Lock -->
+        <div class="step-card" id="step2">
+            <span class="step-tag">Memory #2 🔒 Secret Lock</span>
+            
+            <div id="lockedContent">
+                <div style="font-size: 3rem; margin: 20px 0;">🔒</div>
+                <div class="question-title">Q2: Yeh memory locked hai! Secret Passcode enter karo:</div>
+                <p style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">Hint: Tera ya mera Birth Year (e.g. 2003)</p>
+                
+                <div class="passcode-box">
+                    <input type="password" id="passInput" class="passcode-input" placeholder="****" maxlength="4">
+                    <br>
+                    <button class="unlock-btn" onclick="unlockMemory()">Unlock Photo 🔓</button>
+                </div>
+                <div class="feedback-msg" id="passFb"></div>
+            </div>
+
+            <div id="unlockedContent" style="display: none;">
+                <img src="pic2.jpg" alt="Photo 2" class="main-pic">
+                <div class="question-title">Secret Unlocked! ✨ Yeh photo dekh kar purani yaadein taza ho gayi!</div>
+                <button class="next-step-btn" style="display: block;" onclick="nextStep(3)">Go to Sketch Reveal ➔</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Memory #3 (Sketch) + Scratch Card -->
+        <div class="step-card" id="step3">
+            <span class="step-tag">Memory #3 🎨 Special Sketch</span>
+            
+            <div class="question-title">Q3: Apni ungli se screen ko scratch kar aur dekh yahan kya chhipa hai! 👇</div>
+
+            <div class="scratch-container" id="scratchBox">
+                <img src="sketch.jpg" alt="Handmade Sketch" id="scratchImg">
+                <canvas id="scratchCanvas"></canvas>
+            </div>
+
+            <div class="feedback-msg" id="scratchFb">Keep scratching... 🖌️</div>
+            <button class="next-step-btn" id="nxt3" onclick="nextStep(4)">Move to Rating ➔</button>
+        </div>
+
+        <!-- STEP 4: Memory #4 (Nakhre Slider) -->
+        <div class="step-card" id="step4">
+            <span class="step-tag">Memory #4 🙈 Nakhre Check</span>
+            <img src="pic4.jpg" alt="Photo 4" class="main-pic">
+            
+            <div class="question-title">Q4: Tu apne kitne nakhre uthwana chahti hai? 🙈</div>
+            
+            <div class="slider-box">
+                <input type="range" min="0" max="100" value="50" class="custom-slider" id="slider1" oninput="updateSlider1(this.value)">
+                <div class="slider-val" id="sliderVal1">B) 50% - Thode Zyada 😜</div>
+            </div>
+
+            <button class="next-step-btn" style="display: block;" onclick="nextStep(5)">Pick Your Gift Box ➔</button>
+        </div>
+
+        <!-- STEP 5: Gift Selection (Clickable Gift Boxes) -->
+        <div class="step-card" id="step5">
+            <span class="step-tag">Gift Surprise 🎁</span>
+            
+            <div class="question-title">Q5: Pick your Mystery Birthday Box! 🎁✨</div>
+            
+            <div class="gift-grid">
+                <!-- Card 1: Clothes Box -->
+                <div class="gift-card" onclick="selectGift('Outfit Surprise Box 👗🎁')">
+                    <img src="gift_clothes.jpg" alt="Outfit Box">
+                    <span>Outfit Box 👗🎁</span>
+                </div>
+
+                <!-- Card 2: Jewellery Box -->
+                <div class="gift-card" onclick="selectGift('Jewellery Box 💍🎁')">
+                    <img src="gift_jewellery.jpg" alt="Jewellery Box">
+                    <span>Jewellery Box 💍🎁</span>
+                </div>
+
+                <!-- Card 3: Both / Combo Box -->
+                <div class="gift-card" onclick="selectGift('Ultimate Combo Box! 👑🎁')">
+                    <img src="gift_all.jpg" alt="Combo Box">
+                    <span>Combo Box! 👑🎁</span>
+                </div>
+            </div>
+
+            <div class="feedback-msg" id="giftFb" style="color: #ff4757;">Tap any box to choose ➔</div>
+        </div>
+
+        <!-- STEP 6: Final Climax (Best Friend Special) -->
+        <div class="step-card proposal-card" id="step6">
+            <span class="step-tag">The Climax ❤️</span>
+            <img src="pic1.jpg" alt="Final" class="main-pic">
+            
+            <h2>Saare rounds clear ho gaye! 🥳<br><br>Tere jaisi best friend milna ek blessing hai. <b>Kya hum hamesha aise hi ek dusre ke saath rehke pagalpan karenge? ✨</b></h2>
+            
+            <div class="btn-group" id="btnGroup">
+                <button class="btn btn-yes" id="yesBtn" onclick="finalAccept()">Yes, Always! ❤️</button>
+                <button class="btn btn-no" id="noBtn" ontouchstart="runAway()" onmouseover="runAway()" onclick="runAway()">No way 😜</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 3. SUCCESS SCREEN -->
+    <div class="success-screen" id="successScreen">
+        <h1>Yayyy! Best Friends Forever! ❤️</h1>
+        <p>Tune is din ko aur bhi zyada special bana diya! ✨</p>
+        <p style="font-size: 1.1rem; margin-top: 20px; color: #ff4757; font-weight: 600;">Happy Birthday Once Again! 🎉</p>
+    </div>
+
+    <script>
+        // Store User Choice Variables
+        let userSelectedGift = "";
+
+        // 👉 YAHAN APNA GOOGLE APPS SCRIPT WEB APP URL PASTE KRNA HAI:
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyz0H0UPAz9VyNzkxmhMiuIQgQCrThqLRD_tMdpqGYfcGLWY85zBf5wn2e0MtX4iDj4PQ/exec";
+
+        // --- 1. Friendship Timer ---
+        const startDate = new Date(2022, 7, 15); 
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - startDate;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('friendshipTimer').innerHTML = `Best Friends Since: <b>${days} Days ❤️</b>`;
+        }
+        updateTimer();
+
+        // --- 2. Floating Hearts Animation ---
+        function createHearts() {
+            const container = document.getElementById('heartBg');
+            for(let i=0; i<15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                container.appendChild(heart);
+            }
+        }
+        createHearts();
+
+        // --- 3. Start Button & Song Play ---
+        function startSurprise() {
+            const music = document.getElementById('bgMusic');
+            music.currentTime = 5; 
+            music.play().catch(()=>{});
+            
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            }
+
+            const cover = document.getElementById('coverPage');
+            const app = document.getElementById('appContainer');
+
+            cover.style.opacity = '0';
+            cover.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                cover.style.display = 'none';
+                app.style.display = 'block';
+            }, 800);
+        }
+
+        // --- 4. Auto-Advance Quiz Logic ---
+        function checkQuiz(step, isCorrect, msg) {
+            const fb = document.getElementById('fb' + step);
+            fb.innerText = msg;
+            
+            if (isCorrect) {
+                fb.style.color = '#00b894';
+                setTimeout(() => {
+                    nextStep(2);
+                }, 1000);
+            } else {
+                fb.style.color = '#d63031';
+            }
+        }
+
+        // --- 5. Passcode Lock ---
+        function unlockMemory() {
+            const code = document.getElementById('passInput').value;
+            const fb = document.getElementById('passFb');
+            
+            if(code === "2008" || code === "2006" || code === "1234") {
+                document.getElementById('lockedContent').style.display = 'none';
+                document.getElementById('unlockedContent').style.display = 'block';
+            } else {
+                fb.innerText = "Arey galat passcode! Dobara try karo 😜";
+                fb.style.color = "#d63031";
+            }
+        }
+
+        // --- 6. SCRATCH CARD LOGIC ---
+        let isScratchInitialized = false;
+
+        function initScratchCard() {
+            if(isScratchInitialized) return;
+            
+            const box = document.getElementById('scratchBox');
+            const canvas = document.getElementById('scratchCanvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = box.clientWidth || 350;
+            canvas.height = box.clientHeight || 280;
+
+            ctx.fillStyle = '#b2bec3';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.font = '600 16px Poppins';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.fillText('Scratch Here with Finger 🖌️', canvas.width / 2, canvas.height / 2);
+
+            let isScratching = false;
+
+            function getPosition(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+
+            function scratch(e) {
+                if(!isScratching) return;
+                e.preventDefault();
+                
+                const pos = getPosition(e);
+
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 32, 0, Math.PI * 2);
+                ctx.fill();
+
+                document.getElementById('scratchFb').innerText = "Wow! Kitna pyaara sketch hai! ❤️";
+                document.getElementById('nxt3').style.display = 'block';
+
+                checkScratchPercentage();
+            }
+
+            function checkScratchPercentage() {
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                let clearedPixels = 0;
+                for (let i = 3; i < imgData.data.length; i += 4) {
+                    if (imgData.data[i] === 0) clearedPixels++;
+                }
+                const percentage = (clearedPixels / (imgData.data.length / 4)) * 100;
+                if (percentage > 40) {
+                    canvas.style.transition = "opacity 0.5s ease";
+                    canvas.style.opacity = "0";
+                    setTimeout(() => canvas.style.display = "none", 500);
+                }
+            }
+
+            canvas.addEventListener('mousedown', (e) => { isScratching = true; scratch(e); });
+            canvas.addEventListener('mouseup', () => isScratching = false);
+            canvas.addEventListener('mousemove', scratch);
+
+            canvas.addEventListener('touchstart', (e) => { isScratching = true; scratch(e); }, {passive: false});
+            canvas.addEventListener('touchend', () => isScratching = false);
+            canvas.addEventListener('touchmove', scratch, {passive: false});
+
+            isScratchInitialized = true;
+        }
+
+        // --- 7. Slider Logic ---
+        function updateSlider1(val) {
+            const txt = document.getElementById('sliderVal1');
+            if(val < 33) txt.innerText = "A) " + val + "% - Kam 😇";
+            else if(val < 66) txt.innerText = "B) " + val + "% - Thode Zyada 😜";
+            else txt.innerText = "C) " + val + "% - Lifetime Unlimited! 👑";
+        }
+
+        // --- 8. Gift Selection Logic ---
+        function selectGift(choice) {
+            userSelectedGift = choice;
+            document.getElementById('giftFb').innerText = "Selected: " + choice + " ✨";
+            setTimeout(() => {
+                nextStep(6);
+            }, 600);
+        }
+
+        // --- 9. Navigation ---
+        function nextStep(step) {
+            document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+
+            if(step === 3) {
+                setTimeout(initScratchCard, 200);
+            }
+        }
+
+        // --- 10. Runaway NO Button ---
+        function runAway() {
+            const btn = document.getElementById('noBtn');
+            const yesBtn = document.getElementById('yesBtn');
+            
+            const yesRect = yesBtn.getBoundingClientRect();
+            const btnWidth = btn.offsetWidth || 100;
+            const btnHeight = btn.offsetHeight || 45;
+
+            let randomX, randomY;
+            let overlap = true;
+            let attempts = 0;
+
+            while (overlap && attempts < 50) {
+                randomX = Math.random() * (window.innerWidth - btnWidth - 30) + 15;
+                randomY = Math.random() * (window.innerHeight - btnHeight - 30) + 15;
+
+                const isOverlappingX = (randomX + btnWidth > yesRect.left - 20) && (randomX < yesRect.right + 20);
+                const isOverlappingY = (randomY + btnHeight > yesRect.top - 20) && (randomY < yesRect.bottom + 20);
+
+                if (!isOverlappingX || !isOverlappingY) {
+                    overlap = false;
+                }
+                attempts++;
+            }
+
+            btn.style.position = 'fixed';
+            btn.style.left = randomX + 'px';
+            btn.style.top = randomY + 'px';
+        }
+
+        // --- 11. Final Acceptance Action (Google Sheet Data Sender) ---
+        function finalAccept() {
+            confetti({
+                particleCount: 220,
+                spread: 100,
+                origin: { y: 0.6 }
+            });
+
+            // Google Sheet par data bhejne ka payload
+            const payload = {
+                quiz: "Option B (Cute & Intelligent)",
+                nakhre: document.getElementById('slider1').value + "%",
+                gift: userSelectedGift || "Not Selected",
+                climax: "Yes, Always! ❤️"
+            };
+
+            // Data POST request ke through Google Sheet par bhej rahe hain
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                console.log("Data sent to Google Sheet successfully!");
+            }).catch(err => console.log("Error:", err));
+
+            setTimeout(() => {
+                document.getElementById('successScreen').style.display = 'flex';
+            }, 600);
+        }
+    </script>
+</body>
+</html>
